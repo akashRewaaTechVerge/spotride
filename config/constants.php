@@ -1,14 +1,14 @@
 <?php
 
 return [
-    'status1' => 'ture',
-    'status0' => 'false',
-    'register' => 'User Register Success',
-    'register0' => 'Invalid Register',
-    'login' => 'User Loged In',
-    'login0' => 'User Loged Faild',
-    'otpvarify' => 'varify Success',
-    'varify0' => 'varify Faild',
+    'status_ture' => 'ture',
+    'status_false' => 'false',
+    'register_success' => 'User Register Success',
+    'register_faild' => 'Invalid Register',
+    'login_success' => 'User Loged In',
+    'login_faild' => 'User Loged Faild',
+    'otpvarify_success' => 'varify Success',
+    'varify_faild' => 'varify Faild',
     'tokenMessage' => 'Tokens Revoked',
     'revokeData' => 1,
     'success' => 200,

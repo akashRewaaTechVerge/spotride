@@ -43,17 +43,16 @@ class spotRideController extends Controller {
             $otpkey = base64_encode( Encrypter::generateKey( $otp ) );
 
             $success[ 'first_name' ] =  $user->first_name;
-            $status =  config::get( 'constants.status1' );
-            $message =  config::get( 'constants.register' );
+            $status =  config::get( 'constants.status_ture' );
+            $message =  config::get( 'constants.register_success' );
             $code = config::get( 'constants.success' );
             $data = $token;
             $otpkey = $otpkey;
 
             return ResponseBuilder::rsaresponse( $status, $data, $message, $code, $otpkey );
-
         } catch ( \Exception $e ) {
-            $status =  config::get( 'constants.status0' );
-            $message =  config::get( 'constants.register0' );
+            $status =  config::get( 'constants.status_ture' );
+            $message =  config::get( 'constants.register_faild' );
             $code = config::get( 'constants.false' );
             $data = [];
             $otpkey = [];
@@ -73,8 +72,8 @@ class spotRideController extends Controller {
             }
             $userToken = auth()->user()->createToken( 'API Token' )->plainTextToken;
             $userData = User::where( 'contact', $request->contact )->update( [ 'remember_token' => $userToken ] );
-            $status = config::get( 'constants.status1' );
-            $message = config::get( 'constants.login' );
+            $status = config::get( 'constants.status_ture' );
+            $message = config::get( 'constants.login_success' );
             $code = config::get( 'constants.success' );
             $data = $userToken;
 
@@ -87,53 +86,51 @@ class spotRideController extends Controller {
             return ResponseBuilder::response( $status, $data, $message, $code );
         }
     }
-
     // ---------------- [ ' logout ' ] -------------
 
     public function logout() {
         try {
             auth()->user()->tokens()->delete();
-            $status = config::get( 'constants.status1' );
+            $status = config::get( 'constants.status_ture' );
             $data = config::get( 'constants.revokeData' );
             $message = config::get( 'constants.tokenMessage' );
             $code = config::get( 'constants.false' );
 
             return ResponseBuilder::response( $status, $data, $message, $code );
         } catch ( \Exception $e ) {
-            $status = config::get( 'constants.status0' );
+            $status = config::get( 'constants.status_false' );
             $message = $e->getMessage();
             $code = config::get( 'constants.false' );
             return ResponseBuilder::response( $status, $data, $message, $code );
         }
     }
-
     // ------------- [ ' For Otp Registration ' ] -------
 
     public function otpVarification( Request $request ) {
         try {
             $validator = Validator::make( $request->all(), [
-                'contact' => 'required|min:10',
+                'phone' => 'required|min:10',
                 'otp' => 'required|min:6',
             ] );
             if ( $validator->fails() ) {
 
                 return response( [ 'faild'=>$validator->errors()->all() ], 422 );
             }
-            if ( User::where( [ [ 'contact', $request->contact ], [ 'user_otp', $request->otp ] ] )->exists() ) {
-                $status =  config::get( 'constants.status1' );
-                $message =  config::get( 'constants.otpvarify' );
+            $user = User::where( [ 'contact' => $request->phone, 'user_otp' => $request->otp ] )->first();
+            if ( $user || Hash::check( $request->otp, $request->phone ) ) {
+                $status =  config::get( 'constants.status_ture' );
+                $message =  config::get( 'constants.otpvarify_success' );
                 $code = config::get( 'constants.success' );
                 $data = 1;
                 return ResponseBuilder::response( $status, $data, $message, $code );
             }
-            $status =  config::get( 'constants.status0' );
-            $message =  config::get( 'constants.varify0' );
+            $status =  config::get( 'constants.status_false' );
+            $message =  config::get( 'constants.varify_faild' );
             $code = config::get( 'constants.false' );
             $data = [];
             return ResponseBuilder::response( $status, $data, $message, $code );
-
         } catch ( \Exception $e ) {
-            $status =  config::get( 'constants.statu0' );
+            $status =  config::get( 'constants.status_false' );
             $message =  $e->getMessage();
             $code = config::get( 'constants.false' );
             $data = [];
